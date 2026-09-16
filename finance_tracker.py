@@ -1,14 +1,32 @@
 # Personal Finance Tracker and Budget System
 
 from datetime import datetime
+import sqlite3
+
+connection = sqlite3.connect("finance_tracker.db")
+cursor = connection.cursor()
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS transactions(
+        id INTEGER PRIMARY KEY,
+        merchant TEXT,
+        amount REAL,
+        category TEXT,
+        spending_income TEXT,
+        date_time TEXT
+    )
+""")
+
+connection.commit()
 
 class Transaction:
-    def __init__(self, merchant, amount, category, spending_income, date_time):
+    def __init__(self, merchant, amount, category, spending_income, date_time, transaction_id=None):
         self.merchant = merchant
         self.amount = amount
         self.category = category
         self.spending_income = spending_income
         self.date_time = datetime.strptime(date_time, "%m/%d/%Y %I:%M %p")
+        self.id = transaction_id
 
 def add_transaction(transaction):
     if transaction.amount <= 0:
@@ -16,7 +34,41 @@ def add_transaction(transaction):
     elif transaction.spending_income != "Income" and transaction.spending_income != "Spending":
         print("Error. Must be Income or Spending.")
     else:
+        cursor.execute("""
+            INSERT INTO transactions (merchant, amount, category, spending_income, date_time)
+            VALUES (?, ?, ?, ?, ?) 
+        """, (
+            transaction.merchant,
+            transaction.amount,
+            transaction.category, 
+            transaction.spending_income,
+            transaction.date_time.strftime("%m/%d/%Y %I:%M %p")
+        ))
+
+        transaction.id = cursor.lastrowid
+
+        connection.commit()
         transactions.append(transaction)
+
+def load_transactions():
+    cursor.execute("SELECT * FROM transactions")
+    rows = cursor.fetchall()
+
+    loaded_transactions = []
+
+    for row in rows:
+        transaction = Transaction(
+            row[1],
+            row[2],
+            row[3],
+            row[4],
+            row[5],
+            row[0]
+        )
+
+        loaded_transactions.append(transaction)
+    
+    return loaded_transactions
 
 def view_transactions():
     for transaction in transactions:
@@ -25,11 +77,34 @@ def view_transactions():
 def delete_transaction(transaction):
     try:
         transactions.remove(transaction)
+
+        cursor.execute("""
+            DELETE FROM transactions
+            WHERE id = ?
+        """, (
+            transaction.id,
+        ))
+
+        connection.commit()
+
     except ValueError:
         print("Error. Transaction not found.")
 
 def edit_transaction(transaction, new_amount):
-    transaction.amount = new_amount
+    if new_amount <= 0:
+        print("Error. The amount must be greater than $0.")
+    else:
+        cursor.execute("""
+            UPDATE transactions
+            SET amount = ?
+            WHERE id = ?
+        """, (
+            new_amount,
+            transaction.id,    
+        ))
+
+        connection.commit()
+        transaction.amount = new_amount
 
 def calculate_income():
     total_income = 0
@@ -76,38 +151,5 @@ def calculate_monthly_spending(month, year):
             month_total += transaction.amount
     return month_total
 
+transactions = load_transactions()
 
-
-transaction1 = Transaction("Publix", 45.72, "Food", "Spending", "09/08/2026 2:30 PM")
-transaction2 = Transaction("Bostons on the Beach", 1500, "Paycheck", "Income", "09/01/2026 3:00 AM")
-transaction3 = Transaction("Shell", 40, "Gas", "Spending", "09/09/2026 2:14 AM")
-transaction4 = Transaction("Costco", -256.87, "Food", "Spending", "09/09/2026 2:44 AM")
-transaction5 = Transaction("Walmart", 105.06, "Shopping", "Banana", "09/09/2026 2:53 AM")
-transaction6 = Transaction("Target", 75, "Shopping", "Spending", "10/05/2026 4:00 PM")
-
-transactions = [transaction1, transaction2]
-
-add_transaction(transaction3)
-add_transaction(transaction4)
-add_transaction(transaction5)
-add_transaction(transaction6)
-
-delete_transaction(transaction1)
-delete_transaction(transaction1)
-
-edit_transaction(transaction3, 50)
-
-view_transactions()
-
-print(calculate_income())
-print(calculate_spending())
-print(calculate_balance())
-
-print(calculate_category_totals())
-print(calculate_monthly_spending(9, 2026))
-print(calculate_monthly_spending(10, 2026))
-
-september_transactions = filter_transactions_by_month(9, 2026)
-
-for transaction in september_transactions:
-    print(f"{transaction.merchant} {transaction.amount} {transaction.category} {transaction.spending_income} {transaction.date_time}")
