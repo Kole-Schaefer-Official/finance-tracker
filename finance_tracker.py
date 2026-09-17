@@ -34,6 +34,9 @@ def add_transaction(transaction):
     elif transaction.spending_income != "Income" and transaction.spending_income != "Spending":
         print("Error. Must be Income or Spending.")
     else:
+        connection = sqlite3.connect("finance_tracker.db")
+        cursor = connection.cursor()
+
         cursor.execute("""
             INSERT INTO transactions (merchant, amount, category, spending_income, date_time)
             VALUES (?, ?, ?, ?, ?) 
@@ -48,11 +51,17 @@ def add_transaction(transaction):
         transaction.id = cursor.lastrowid
 
         connection.commit()
+        connection.close()
         transactions.append(transaction)
 
 def load_transactions():
+    connection = sqlite3.connect("finance_tracker.db")
+    cursor = connection.cursor()
+
     cursor.execute("SELECT * FROM transactions")
     rows = cursor.fetchall()
+
+    connection.close()
 
     loaded_transactions = []
 
