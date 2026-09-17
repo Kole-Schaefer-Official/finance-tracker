@@ -11,6 +11,10 @@
         Date: {{transaction.date_time}}<br>
         ID: {{transaction.id}}
     </p>
+
+    <form method="POST" action="/delete/{{ transaction.id }}">
+        <button type="submit">Delete</button>
+    </form>
 {% endfor %}
 
 <h2>Add Transaction</h2>

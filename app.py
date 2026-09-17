@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 from datetime import datetime
 
-from finance_tracker import load_transactions, Transaction, add_transaction
+from finance_tracker import load_transactions, Transaction, add_transaction, delete_transaction
 
 app = Flask(__name__)
 
@@ -30,6 +30,12 @@ def home():
 
     transactions = load_transactions()
     return render_template("index.html", transactions=transactions)
+
+@app.route("/delete/<int:transaction_id>", methods=["POST"])
+def delete(transaction_id):
+    delete_transaction(transaction_id)
+    return redirect(url_for("home"))
+
 
 @app.route("/about")
 def about():

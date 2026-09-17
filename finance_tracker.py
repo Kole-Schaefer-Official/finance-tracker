@@ -83,21 +83,20 @@ def view_transactions():
     for transaction in transactions:
         print(f"{transaction.merchant} {transaction.amount} {transaction.spending_income} {transaction.category} {transaction.date_time}")
 
-def delete_transaction(transaction):
-    try:
-        transactions.remove(transaction)
+def delete_transaction(transaction_id):
+    connection = sqlite3.connect("finance_tracker.db")
+    cursor = connection.cursor()
+    
 
-        cursor.execute("""
-            DELETE FROM transactions
-            WHERE id = ?
-        """, (
-            transaction.id,
-        ))
+    cursor.execute("""
+        DELETE FROM transactions
+        WHERE id = ?
+    """, (
+        transaction_id,
+    ))
 
-        connection.commit()
-
-    except ValueError:
-        print("Error. Transaction not found.")
+    connection.commit()
+    connection.close()
 
 def edit_transaction(transaction, new_amount):
     if new_amount <= 0:
