@@ -1,0 +1,27 @@
+<h1>Edit Transaction</h1>
+
+<form method="POST">
+    <label>Merchant</label>
+    <input type="text" name="merchant" value="{{ transaction.merchant }}">
+
+    <label>Amount</label>
+    <input type="number" name="amount" value="{{ transaction.amount }}">
+
+    <label>Category</label>
+    <input type="text" name="category" value="{{ transaction.category }}">
+
+    <label>Type</label>
+    <select name="spending_income">
+        <option value="Income" {% if transaction.spending_income == "Income" %}selected{% endif %}>Income</option>
+        <option value="Spending" {% if transaction.spending_income == "Spending" %}selected{% endif %}>Spending</option>
+    </select>
+
+    <label>Date and Time</label>
+    <input
+        type="datetime-local"
+        name="date_time"
+        value="{{ transaction.date_time.strftime('%Y-%m-%dT%H:%M') }}"
+    >
+
+    <button type="submit">Save Changes</button>
+</form>

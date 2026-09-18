@@ -79,6 +79,35 @@ def load_transactions():
     
     return loaded_transactions
 
+def get_transaction_by_id(transaction_id):
+    connection = sqlite3.connect("finance_tracker.db")
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT * FROM transactions
+        WHERE id = ?
+    """, (
+        transaction_id,
+    ))
+
+    row = cursor.fetchone()
+    connection.close()
+
+    if row is None:
+        return None
+
+    transaction = Transaction(
+            row[1],
+            row[2],
+            row[3],
+            row[4],
+            row[5],
+            row[0]
+        )
+
+    return transaction
+
+
 def view_transactions():
     for transaction in transactions:
         print(f"{transaction.merchant} {transaction.amount} {transaction.spending_income} {transaction.category} {transaction.date_time}")
@@ -98,21 +127,32 @@ def delete_transaction(transaction_id):
     connection.commit()
     connection.close()
 
-def edit_transaction(transaction, new_amount):
-    if new_amount <= 0:
+def edit_transaction(transaction_id, merchant, amount, category, spending_income, date_time):
+    if amount <= 0:
         print("Error. The amount must be greater than $0.")
     else:
+        connection = sqlite3.connect("finance_tracker.db")
+        cursor = connection.cursor()
+
         cursor.execute("""
             UPDATE transactions
-            SET amount = ?
+            SET merchant = ?,
+                amount = ?,
+                category = ?,
+                spending_income = ?,
+                date_time = ?
             WHERE id = ?
         """, (
-            new_amount,
-            transaction.id,    
+            merchant,
+            amount,
+            category,
+            spending_income,
+            date_time,
+            transaction_id
         ))
 
         connection.commit()
-        transaction.amount = new_amount
+        connection.close()
 
 def calculate_income():
     total_income = 0

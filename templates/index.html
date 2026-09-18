@@ -15,6 +15,8 @@
     <form method="POST" action="/delete/{{ transaction.id }}">
         <button type="submit">Delete</button>
     </form>
+
+    <a href="/edit/{{ transaction.id }}">Edit</a>
 {% endfor %}
 
 <h2>Add Transaction</h2>
