@@ -1,5 +1,23 @@
 <h1>Finance Tracker</h1>
 
+<h2>Dahsboard</h2>
+
+<h2>Set Monthly Budget</h2>
+
+<form method="POST" action="/budget">
+    <label>Budget Amount</label>
+    <input type="number" name="budget_amount">
+
+    <button type="submit">Set Budget</button>
+</form>
+
+<p>Total Income: ${{ total_income }}</p>
+<p>Total Spending: ${{ total_spending }}</p>
+<p>Balance: ${{ balance }}</p>
+<p>Monthly Spending: ${{ monthly_spending }}</p>
+<p>Monthly Budget: ${{ monthly_budget }}</p>
+<p>Budget Remaining: ${{ budget_remaining }}</p>
+
 <h2>Transactions</h2>
 
 {% for transaction in transactions %}

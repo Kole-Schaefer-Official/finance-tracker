@@ -17,7 +17,17 @@ cursor.execute("""
     )
 """)
 
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS budgets(
+        id INTEGER PRIMARY KEY,
+        month INTEGER,
+        year INTEGER,
+        amount REAL
+    )
+""")
+
 connection.commit()
+connection.close()
 
 class Transaction:
     def __init__(self, merchant, amount, category, spending_income, date_time, transaction_id=None):
@@ -52,7 +62,6 @@ def add_transaction(transaction):
 
         connection.commit()
         connection.close()
-        transactions.append(transaction)
 
 def load_transactions():
     connection = sqlite3.connect("finance_tracker.db")
@@ -108,7 +117,7 @@ def get_transaction_by_id(transaction_id):
     return transaction
 
 
-def view_transactions():
+def view_transactions(transactions):
     for transaction in transactions:
         print(f"{transaction.merchant} {transaction.amount} {transaction.spending_income} {transaction.category} {transaction.date_time}")
 
@@ -154,24 +163,28 @@ def edit_transaction(transaction_id, merchant, amount, category, spending_income
         connection.commit()
         connection.close()
 
-def calculate_income():
+def calculate_income(transactions):
     total_income = 0
+
     for transaction in transactions:
         if transaction.spending_income == "Income":
             total_income += transaction.amount
+
     return total_income
 
-def calculate_spending():
+def calculate_spending(transactions):
     total_spending = 0
+
     for transaction in transactions:
         if transaction.spending_income == "Spending":
             total_spending += transaction.amount
+
     return total_spending
 
-def calculate_balance():
-    return calculate_income() - calculate_spending()
+def calculate_balance(transactions):
+    return calculate_income(transactions) - calculate_spending(transactions)
 
-def calculate_category_totals():
+def calculate_category_totals(transactions):
     category_totals = {}
     for transaction in transactions:
         if transaction.spending_income == "Spending":
@@ -182,7 +195,7 @@ def calculate_category_totals():
                 category_totals[category] = transaction.amount
     return category_totals
 
-def filter_transactions_by_month(month, year):
+def filter_transactions_by_month(transactions, month, year):
     filtered_transactions = []
 
     for transaction in transactions:
@@ -190,8 +203,8 @@ def filter_transactions_by_month(month, year):
             filtered_transactions.append(transaction)
     return filtered_transactions
 
-def calculate_monthly_spending(month, year):
-    monthly_transactions = filter_transactions_by_month(month, year)
+def calculate_monthly_spending(transactions, month, year):
+    monthly_transactions = filter_transactions_by_month(transactions, month, year)
     month_total = 0
 
     for transaction in monthly_transactions:
@@ -199,5 +212,59 @@ def calculate_monthly_spending(month, year):
             month_total += transaction.amount
     return month_total
 
-transactions = load_transactions()
+def set_monthly_budget(month, year, amount):
+    connection = sqlite3.connect("finance_tracker.db")
+    cursor = connection.cursor()
 
+    cursor.execute("""
+        SELECT id FROM budgets
+        WHERE month = ? AND year = ?
+    """, (
+        month,
+        year
+    ))
+
+    existing_budget = cursor.fetchone()
+
+    if existing_budget is not None:
+        cursor.execute("""
+        UPDATE budgets
+        SET amount = ?
+        WHERE month = ? AND year = ?
+    """, (
+        amount, 
+        month, 
+        year
+    ))
+    else:
+        cursor.execute("""
+        INSERT INTO budgets (month, year, amount)
+        VALUES (?, ?, ?)
+    """, (
+        month,
+        year,
+        amount
+    ))
+
+    connection.commit()
+    connection.close()
+
+def get_monthly_budget(month, year):
+    connection = sqlite3.connect("finance_tracker.db")
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT amount FROM budgets
+        WHERE month = ? AND year = ?
+    """, (
+        month,
+        year
+    ))
+
+    budget = cursor.fetchone()
+    connection.close()
+
+    if budget is None:
+        return 0
+    
+    return budget[0]
