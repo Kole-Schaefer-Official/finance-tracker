@@ -1,27 +1,42 @@
-<h1>Edit Transaction</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Transaction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-<form method="POST">
-    <label>Merchant</label>
-    <input type="text" name="merchant" value="{{ transaction.merchant }}">
+<body>
 
-    <label>Amount</label>
-    <input type="number" name="amount" value="{{ transaction.amount }}">
+<div class="form-card">
+    <h1>Edit Transaction</h1>
 
-    <label>Category</label>
-    <input type="text" name="category" value="{{ transaction.category }}">
+    <form method="POST">
+        <label>Merchant</label>
+        <input type="text" name="merchant" value="{{ transaction.merchant }}" required>
 
-    <label>Type</label>
-    <select name="spending_income">
-        <option value="Income" {% if transaction.spending_income == "Income" %}selected{% endif %}>Income</option>
-        <option value="Spending" {% if transaction.spending_income == "Spending" %}selected{% endif %}>Spending</option>
-    </select>
+        <label>Amount</label>
+        <input type="number" step="0.01" min="0.01" name="amount" value="{{ transaction.amount }}" required>
 
-    <label>Date and Time</label>
-    <input
-        type="datetime-local"
-        name="date_time"
-        value="{{ transaction.date_time.strftime('%Y-%m-%dT%H:%M') }}"
-    >
+        <label>Category</label>
+        <input type="text" name="category" value="{{ transaction.category }}">
 
-    <button type="submit">Save Changes</button>
-</form>
+        <label>Type</label>
+        <select name="spending_income">
+            <option value="Income" {% if transaction.spending_income == "Income" %}selected{% endif %}>Income</option>
+            <option value="Spending" {% if transaction.spending_income == "Spending" %}selected{% endif %}>Spending</option>
+        </select>
+
+        <label>Date and Time</label>
+        <input
+            type="datetime-local"
+            name="date_time"
+            value="{{ transaction.date_time.strftime('%Y-%m-%dT%H:%M') }}"
+            required
+        >
+
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+
+</body>
+</html>

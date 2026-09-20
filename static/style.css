@@ -1,0 +1,119 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 30px;
+}
+
+h1 {
+    color: #222;
+}
+
+h2 {
+    color: #333;
+}
+
+.dashboard {
+    display: grid;
+    grid-templates-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+form {
+    margin-bottom: 25px;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+input,
+select {
+    padding: 10px 16px;
+    margin: 5px 10px 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #222;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.transaction-card {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-status: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-card p {
+    margin: 8px 0;
+}
+
+.transaction-card form {
+    display: inline-block;
+    margin: 10px 0 0 10px;
+}
+
+.form-card {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-card h2 {
+    margin-top: 0;
+}
+
+@media (max-width: 800px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    body {
+        padding: 15px;
+    }
+
+    input,
+    select, 
+    button {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 5px 0;
+    }
+}

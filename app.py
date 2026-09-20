@@ -28,6 +28,8 @@ def home():
 
         add_transaction(transaction)
 
+        return redirect(url_for("home"))
+
     transactions = load_transactions()
     total_income = calculate_income(transactions)
     total_spending = calculate_spending(transactions)
